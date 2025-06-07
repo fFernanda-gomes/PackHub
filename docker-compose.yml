@@ -1,0 +1,35 @@
+services:
+  postgres-auth:
+    image: postgres:15
+    container_name: postgres-auth
+    environment:
+      POSTGRES_DB: ${POSTGRES_AUTH_DB}
+      POSTGRES_USER: ${POSTGRES_AUTH_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_AUTH_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    networks:
+      - packhub
+
+  postgres-product:
+    image: postgres:15
+    container_name: postgres-product
+    environment:
+      POSTGRES_DB: ${POSTGRES_PRODUCT_DB}
+      POSTGRES_USER: ${POSTGRES_PRODUCT_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PRODUCT_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_product_data:/var/lib/postgresql/data
+    networks:
+      - packhub
+
+volumes:
+  postgres_auth_data:
+  postgres_product_data:
+
+networks:
+  packhub:
