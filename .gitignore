@@ -23,5 +23,6 @@
 hs_err_pid*
 replay_pid*
 
+infra/env/.env
 # Arquivos de ambiente
 infra/env/.env
