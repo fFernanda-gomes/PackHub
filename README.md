@@ -1,10 +1,13 @@
 # 🧩 PackHub
 
-**PackHub** é uma API construída com arquitetura de microsserviços utilizando Java + Spring Boot.  
-O sistema é dividido em dois serviços principais:
+*PackHub* é uma API modular com arquitetura de *microsserviços* desenvolvida em *Java + Spring Boot*.  
+O sistema permite que usuários autenticados cadastrem e gerenciem produtos com nome, imagem e preço.  
+É ideal para projetos de marketplace, catálogos ou sistemas administrativos com autenticação e gerenciamento de dados.
 
-- `auth-service`: Responsável pela autenticação dos usuários
-- `product-service`: Responsável pelo cadastro e gerenciamento de produtos
+O projeto é dividido em dois serviços principais:
+
+- auth-service: Responsável pela autenticação dos usuários (login, JWT, registro)
+- product-service: Responsável pelo cadastro e gerenciamento de produtos (CRUD com imagem, nome e preço)
 
 ---
 
@@ -26,8 +29,7 @@ packhub/
 
 ## 🧪 Pré-requisitos
 
-- Java 17+
-- Maven 3.8+
+- Java 17+ e Maven 3.8+ (Apenas para desenvolvimento fora do Docker)
 - Docker + Docker Compose
 - IntelliJ IDEA (recomendado)
 
@@ -38,20 +40,26 @@ packhub/
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/seu-user/packhub.git
+git clone https://github.com/fFernanda-gomes/packhub.git
 cd packhub
 ```
 
-2. Rode os serviços com Docker Compose:
+2. Crie um arquivo .env baseado no .env.example:
 
 ```bash
-docker-compose up --build
+cp infra/env/.env.example infra/env/.env
 ```
 
-3. Acesse:
+3. Rode os serviços com Docker Compose:
 
-- `http://localhost:8080` → `auth-service`
-- `http://localhost:8081` → `product-service`
+```bash
+docker-compose --env-file infra/env/.env up --build -d
+```
+
+4. Acesse os serviços:
+
+- http://localhost:8080 → auth-service
+- http://localhost:8081 → product-service
 
 ---
 
