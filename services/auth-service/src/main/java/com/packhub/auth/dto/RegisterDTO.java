@@ -6,10 +6,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthDTO {
-
+public class RegisterDTO {
     private int userCode;
-    private String senha;
+    private String password;
 }
-
 
