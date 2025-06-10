@@ -1,14 +1,15 @@
 package com.packhub.auth.domain.service;
 
+import com.packhub.auth.config.JwtConfig;
 import com.packhub.auth.domain.entities.User;
-import com.packhub.auth.domain.repositories.UsersRepository;
+import com.packhub.auth.domain.repositories.UserRepository;
+import com.packhub.auth.dto.AuthDTO;
 import com.packhub.auth.dto.RegisterDTO;
 import com.packhub.auth.dto.UserDTO;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,11 +18,13 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class UserService {
     @Autowired
-    private UsersRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtConfig jwtConfig;
 
     @Transactional
     public UserDTO register(RegisterDTO dto) {
@@ -41,4 +44,21 @@ public class UserService {
 
         return new UserDTO(user.getId(), user.getUserCode());
     }
+
+    public AuthDTO auth(AuthDTO authDTO) {
+        User user = this.userRepository.findByUserCode(authDTO.getUserCode())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (!this.passwordEncoder.matches(authDTO.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Senha inválida");
+        }
+
+        String token = jwtConfig.generateToken(String.valueOf(user.getUserCode()));
+
+        return AuthDTO.builder()
+                .id(user.getId())
+                .userCode(user.getUserCode())
+                .token(token)
+                .build();
     }
+}
