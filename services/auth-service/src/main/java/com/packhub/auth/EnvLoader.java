@@ -4,7 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class EnvLoader {
     public static void load() {
         Dotenv dotenv = Dotenv.configure()
-                .directory("./infra/env") // ou onde estiver seu .env
+                .directory("./infra/env")
                 .filename(".env")
                 .load();
 
