@@ -47,19 +47,72 @@ cd packhub
 2. Crie um arquivo .env baseado no .env.example:
 
 ```bash
-cp infra/env/.env.example infra/env/.env
+cp infra/env/.env-example infra/env/.env
 ```
+> Edite o `.env` com suas configurações personalizadas, se necessário.
+> 
 
 3. Rode os serviços com Docker Compose:
 
 ```bash
-docker-compose --env-file infra/env/.env up --build -d
+docker-compose --env-file infra/env/.env up --build
 ```
 
 4. Acesse os serviços:
 
-- http://localhost:8080 → auth-service
-- http://localhost:8081 → product-service
+- `http://localhost:8080` → `auth-service`
+- `http://localhost:8081` → `product-service`
+
+---
+
+## 🔐 Autenticação (JWT)
+
+1. Faça uma requisição `POST` para criar seu usuário:
+```
+POST http://localhost:8080/users
+```
+
+Corpo da requisição:
+
+```json
+{
+  "userCode": 123456,
+  "password": "suaSenha"
+}
+```
+
+2. Faça uma requisição `POST` para autenticar:
+
+```
+POST http://localhost:8080/users/auth
+```
+
+Corpo da requisição:
+
+```json
+{
+  "userCode": 123456,
+  "password": "suaSenha"
+}
+```
+> 🔸 *Você pode escolher os valores de `userCode` e `password` livremente.*
+
+3. O serviço responderá com um token JWT:
+
+```json
+{
+  "id": 1,
+  "userCode": 123456,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+> **Copie o token para utilizá-lo nos endpoints privados.**
+
+4. Para acessar endpoints protegidos em outros serviços, envie o token no header:
+
+```
+Authorization: Bearer SEU_TOKEN
+```
 
 ---
 
