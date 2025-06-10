@@ -5,6 +5,22 @@ Inclui endpoints para **cadastro, edição, listagem e exclusão de produtos**, 
 
 ---
 
+## 🔐 Requisições protegidas
+
+Este serviço exige autenticação via token JWT.
+
+Antes de realizar requisições aos endpoints protegidos, você deve:
+
+1. Autenticar-se no `auth-service`
+2. Obter o token JWT
+3. Enviar o token em cada requisição no header:
+
+```
+Authorization: Bearer SEU_TOKEN
+```
+
+---
+
 ## 📁 Estrutura de Pastas
 
 ```
