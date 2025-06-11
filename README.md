@@ -32,6 +32,11 @@ packhub/
 - Java 17+ e Maven 3.8+ (Apenas para desenvolvimento fora do Docker)
 - Docker + Docker Compose
 - IntelliJ IDEA (recomendado)
+- Conta no [Cloudinary](https://cloudinary.com/) com as credenciais de acesso
+  - `CLOUDINARY_CLOUD_NAME`
+  - `CLOUDINARY_API_KEY`
+  - `CLOUDINARY_API_SECRET`  
+    Essas variáveis devem ser configuradas no `.env` localizado em `infra/env/.env`.
 
 ---
 
@@ -65,55 +70,21 @@ docker-compose --env-file infra/env/.env up --build
 
 ---
 
-## 🔐 Autenticação (JWT)
+## ✅ Testando a API
 
-1. Faça uma requisição `POST` para criar seu usuário:
+### Criar Usuário e Autenticar
+
+1. Faça o registro de um novo usuário via `/auth/register`
+2. Autentique via `/auth/login` para obter o token JWT
+
+### Criar Produto
+
+- Use o token JWT como `Bearer Token`
+- Envie a imagem e os dados em `multipart/form-data`:
+
+```bash
+curl --request POST http://localhost:8081/products   --header "Authorization: Bearer {seu_token}"   --header "Content-Type: multipart/form-data"   --form "image=@/caminho/para/imagem.jpg"   --form 'data={ "name": "Produto X", "price": 99.90 }'
 ```
-POST http://localhost:8080/users
-```
-
-Corpo da requisição:
-
-```json
-{
-  "userCode": 123456,
-  "password": "suaSenha"
-}
-```
-
-2. Faça uma requisição `POST` para autenticar:
-
-```
-POST http://localhost:8080/users/auth
-```
-
-Corpo da requisição:
-
-```json
-{
-  "userCode": 123456,
-  "password": "suaSenha"
-}
-```
-> 🔸 *Você pode escolher os valores de `userCode` e `password` livremente.*
-
-3. O serviço responderá com um token JWT:
-
-```json
-{
-  "id": 1,
-  "userCode": 123456,
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-> **Copie o token para utilizá-lo nos endpoints privados.**
-
-4. Para acessar endpoints protegidos em outros serviços, envie o token no header:
-
-```
-Authorization: Bearer SEU_TOKEN
-```
-
 ---
 
 ## 📦 Tecnologias utilizadas
