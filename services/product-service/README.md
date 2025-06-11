@@ -5,6 +5,28 @@ Inclui endpoints para **cadastro, edição, listagem e exclusão de produtos**, 
 
 ---
 
+# ☁️ Configuração do Cloudinary
+
+Para fazer o upload de imagens, o serviço utiliza o Cloudinary. Crie uma conta em https://cloudinary.com/.
+
+Depois, adicione as seguintes variáveis no `application.properties` ou `application.yml`:
+
+```
+cloudinary.cloud-name=SEU_CLOUD_NAME
+cloudinary.api-key=SEU_API_KEY
+cloudinary.api-secret=SEU_API_SECRET
+```
+
+Se estiver usando `.env` com Docker, adicione:
+
+```
+CLOUDINARY_CLOUD_NAME=SEU_CLOUD_NAME
+CLOUDINARY_API_KEY=SEU_API_KEY
+CLOUDINARY_API_SECRET=SEU_API_SECRET
+```
+
+---
+
 ## 🔐 Requisições protegidas
 
 Este serviço exige autenticação via token JWT.
@@ -17,6 +39,31 @@ Antes de realizar requisições aos endpoints protegidos, você deve:
 
 ```
 Authorization: Bearer SEU_TOKEN
+```
+
+---
+
+## ➕ Criar Produto
+
+**Rota:** `POST /products`  
+**Autenticação:** Bearer Token (JWT)  
+**Content-Type:** multipart/form-data
+
+### Parâmetros:
+
+- `image`: Arquivo de imagem (PNG, JPEG etc)
+- `data`: Objeto JSON com os campos:
+  ```json
+  {
+    "name": "Camiseta",
+    "price": 49.90
+  }
+  ```
+
+### Exemplo de Requisição `curl`:
+
+```bash
+curl --request POST   --url http://localhost:8081/products   --header 'Authorization: Bearer SEU_TOKEN_JWT'   --header 'Content-Type: multipart/form-data'   --form image=@/caminho/da/imagem.png   --form 'data={ "name": "Camiseta", "price": 49.9 }'
 ```
 
 ---
