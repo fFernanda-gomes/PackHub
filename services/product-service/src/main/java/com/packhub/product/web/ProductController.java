@@ -1,18 +1,29 @@
 package com.packhub.product.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.packhub.product.domain.entities.Product;
+import com.packhub.product.domain.service.ProductService;
+import com.packhub.product.dto.CreateProductDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/products")
 public class ProductController {
+
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     //Teste da rota pra ver se traz o userCode -> usar Bearer na req
     @GetMapping("/produtos")
@@ -20,4 +31,16 @@ public class ProductController {
         String userCode = authentication.getName();
         return ResponseEntity.ok("Usuário autenticado: " + userCode);
     }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> create(
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("data") String jsonData
+    ) throws JsonProcessingException {
+
+        CreateProductDTO dto = objectMapper.readValue(jsonData, CreateProductDTO.class);
+        Product product = productService.createProduct(dto, image);
+        return ResponseEntity.status(HttpStatus.CREATED).body(product);
+    }
+
 }
