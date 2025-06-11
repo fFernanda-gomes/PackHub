@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Builder(toBuilder = true)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "PRODUCTS")
 public class Product {
@@ -26,10 +26,13 @@ public class Product {
     private String name;
 
     @NotNull
-    private BigDecimal price;
+    private Double price;
 
     @NotNull
     private String imageUrl;
+
+    @Column(nullable = false)
+    private String userCode;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
