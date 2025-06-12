@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
@@ -41,6 +43,12 @@ public class ProductController {
         CreateProductDTO dto = objectMapper.readValue(jsonData, CreateProductDTO.class);
         Product product = productService.createProduct(dto, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Product>> getProducts() {
+        List<Product> products = this.productService.getProducts();
+        return !products.isEmpty() ? ResponseEntity.ok(products) : ResponseEntity.noContent().build();
     }
 
 }
