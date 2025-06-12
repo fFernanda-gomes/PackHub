@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -63,6 +64,9 @@ public class UserService {
                 .userCode(user.getUserCode())
                 .token(token)
                 .build();
+    }
+    public List<User> getAllUsers() {
+        return this.userRepository.findAll();
     }
 
     public Optional<User> getUserById(Long id) {

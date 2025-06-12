@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +31,12 @@ public class UserController {
     @PostMapping("/auth")
     public ResponseEntity<AuthDTO> authenticate(@RequestBody AuthDTO dto) {
         return ResponseEntity.ok(userService.auth(dto));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<User>> getProducts() {
+        List<User> products = this.userService.getAllUsers();
+        return !products.isEmpty() ? ResponseEntity.ok(products) : ResponseEntity.noContent().build();
     }
 
     @GetMapping("{id}")
