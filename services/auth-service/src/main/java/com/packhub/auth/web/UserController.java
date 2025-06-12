@@ -1,5 +1,6 @@
 package com.packhub.auth.web;
 
+import com.packhub.auth.domain.entities.User;
 import com.packhub.auth.domain.service.UserService;
 import com.packhub.auth.dto.AuthDTO;
 import com.packhub.auth.dto.RegisterDTO;
@@ -28,6 +29,13 @@ public class UserController {
     @PostMapping("/auth")
     public ResponseEntity<AuthDTO> authenticate(@RequestBody AuthDTO dto) {
         return ResponseEntity.ok(userService.auth(dto));
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<User> getProduct(@PathVariable Long id) {
+        return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
