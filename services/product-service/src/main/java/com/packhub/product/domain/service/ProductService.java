@@ -4,7 +4,9 @@ import com.packhub.product.config.AuthenticatedUserProvider;
 import com.packhub.product.domain.entities.Product;
 import com.packhub.product.domain.repositories.ProductRepository;
 import com.packhub.product.dto.CreateProductDTO;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,5 +41,19 @@ public class ProductService {
 
     public List<Product> getProductsByUserCode(String userCode) {
         return repository.findAllByUserCode(userCode);
+    }
+
+    public void deleteProduct(Long id) {
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+
+        String userCode = authenticatedUserProvider.getUserCodeFromToken();
+
+        if (!product.getUserCode().equals(userCode)) {
+            throw new AccessDeniedException("Você não tem permissão para excluir este produto.");
+        }
+
+        repository.delete(product);
+
     }
 }
