@@ -32,14 +32,14 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<User> getProduct(@PathVariable Long id) {
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
