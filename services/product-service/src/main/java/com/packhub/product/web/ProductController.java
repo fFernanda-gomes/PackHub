@@ -29,22 +29,18 @@ public class ProductController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    //Teste da rota pra ver se traz o userCode -> usar Bearer na req
-    @GetMapping("/produtos")
-    public ResponseEntity<?> getProdutos(Authentication authentication) {
-        String userCode = authentication.getName();
-        return ResponseEntity.ok("Usuário autenticado: " + userCode);
-    }
-
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Product> create(
             @RequestParam("image") MultipartFile image,
             @RequestParam("data") String jsonData
-    ) throws JsonProcessingException {
-
-        CreateProductDTO dto = objectMapper.readValue(jsonData, CreateProductDTO.class);
-        Product product = productService.createProduct(dto, image);
-        return ResponseEntity.status(HttpStatus.CREATED).body(product);
+    ) {
+        try {
+            CreateProductDTO dto = objectMapper.readValue(jsonData, CreateProductDTO.class);
+            Product product = productService.createProduct(dto, image);
+            return ResponseEntity.status(HttpStatus.CREATED).body(product);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping
@@ -59,6 +55,23 @@ public class ProductController {
         return products.isEmpty()
                 ? ResponseEntity.notFound().build()
                 : ResponseEntity.ok(products);
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> update(
+            @PathVariable Long id,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam("data") String jsonData
+    ) {
+        try {
+            CreateProductDTO dto = objectMapper.readValue(jsonData, CreateProductDTO.class);
+            Product updated = productService.updateProduct(id, dto, image);
+            return ResponseEntity.ok(updated);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @DeleteMapping("/{id}")

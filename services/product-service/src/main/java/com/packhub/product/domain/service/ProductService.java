@@ -10,6 +10,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -41,6 +42,27 @@ public class ProductService {
 
     public List<Product> getProductsByUserCode(String userCode) {
         return repository.findAllByUserCode(userCode);
+    }
+
+    public Product updateProduct(Long id, CreateProductDTO dto, MultipartFile image) {
+        Product productExist = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+
+        if (dto.getName() != null) productExist.setName(dto.getName());
+        if (dto.getPrice() != null) productExist.setPrice(dto.getPrice());
+
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = cloudinaryService.upload(image);
+            productExist.setImageUrl(imageUrl);
+        }
+
+        String userCode = authenticatedUserProvider.getUserCodeFromToken();
+        if (!productExist.getUserCode().equals(userCode)) {
+            throw new AccessDeniedException("Você não tem permissão para editar este produto.");
+        }
+
+        productExist.setUpdatedAt(LocalDateTime.now());
+        return repository.save(productExist);
     }
 
     public void deleteProduct(Long id) {
