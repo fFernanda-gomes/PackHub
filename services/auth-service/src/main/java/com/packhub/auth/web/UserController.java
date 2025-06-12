@@ -29,4 +29,10 @@ public class UserController {
     public ResponseEntity<AuthDTO> authenticate(@RequestBody AuthDTO dto) {
         return ResponseEntity.ok(userService.auth(dto));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
 }
