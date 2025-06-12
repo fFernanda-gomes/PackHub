@@ -36,4 +36,8 @@ public class ProductService {
     public List<Product> getProducts() {
         return this.repository.findAll();
     }
+
+    public List<Product> getProductsByUserCode(String userCode) {
+        return repository.findAllByUserCode(userCode);
+    }
 }

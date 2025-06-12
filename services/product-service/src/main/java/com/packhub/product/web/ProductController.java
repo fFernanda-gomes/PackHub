@@ -51,4 +51,12 @@ public class ProductController {
         return !products.isEmpty() ? ResponseEntity.ok(products) : ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/user/{userCode}")
+    public ResponseEntity<List<Product>> getProductsByUserCode(@PathVariable String userCode) {
+        List<Product> products = productService.getProductsByUserCode(userCode);
+        return products.isEmpty()
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok(products);
+    }
+
 }
