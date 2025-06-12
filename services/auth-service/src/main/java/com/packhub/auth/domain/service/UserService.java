@@ -6,6 +6,7 @@ import com.packhub.auth.domain.repositories.UserRepository;
 import com.packhub.auth.dto.AuthDTO;
 import com.packhub.auth.dto.RegisterDTO;
 import com.packhub.auth.dto.UserDTO;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +61,12 @@ public class UserService {
                 .userCode(user.getUserCode())
                 .token(token)
                 .build();
+    }
+
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+
+        userRepository.delete(user);
     }
 }
