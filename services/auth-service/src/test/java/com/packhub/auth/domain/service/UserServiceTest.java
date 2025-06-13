@@ -3,6 +3,7 @@ package com.packhub.auth.domain.service;
 import com.packhub.auth.config.JwtConfig;
 import com.packhub.auth.domain.entities.User;
 import com.packhub.auth.domain.repositories.UserRepository;
+import com.packhub.auth.dto.AuthDTO;
 import com.packhub.auth.dto.RegisterDTO;
 import com.packhub.auth.dto.UserDTO;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +18,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.AssertionErrors;
+import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDriverBuilder;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -84,6 +87,22 @@ public class UserServiceTest {
 
         verify(userRepository).findByUserCode(12345);
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Deve autenticar usuário com sucesso")
+    void shouldAuthenticateUser() throws Exception {
+        AuthDTO input = new AuthDTO(12345, "senha", null, null);
+        AuthDTO output = new AuthDTO(12345, "senha", 1L, "token-falso");
+
+        Mockito.when(userService.auth(any(AuthDTO.class))).thenReturn(output);
+
+        MockMvcHtmlUnitDriverBuilder.mockMvcSetup().perform(userRepository("/users/auth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value("token-falso"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userCode").value(12345));
     }
 
     @Test
