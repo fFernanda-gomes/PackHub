@@ -73,6 +73,16 @@ public class UserService {
         return this.userRepository.findById(id);
     }
 
+    public User updateUser(Long id, RegisterDTO user) {
+        User UserExist = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        if (user.getUserCode() != null) UserExist.setUserCode(user.getUserCode());
+        if (user.getPassword() != null) UserExist.setPassword(user.getPassword());
+
+        return userRepository.save(UserExist);
+    }
+
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
