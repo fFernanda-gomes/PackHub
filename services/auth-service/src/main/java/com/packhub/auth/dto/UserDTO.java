@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserDTO {
     private Long id;
-    private int userCode;
+    private Integer userCode;
 }
