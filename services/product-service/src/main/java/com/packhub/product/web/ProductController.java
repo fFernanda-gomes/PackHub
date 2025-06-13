@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.packhub.product.domain.entities.Product;
 import com.packhub.product.domain.service.ProductService;
 import com.packhub.product.dto.CreateProductDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
+import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class ProductController {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Operation(summary = "Criar novo produto com imagem")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Product> create(
             @RequestParam("image") MultipartFile image,
@@ -42,13 +44,14 @@ public class ProductController {
             return ResponseEntity.badRequest().build();
         }
     }
-
+    @Operation(summary = "Listar todos os produtos")
     @GetMapping
     public ResponseEntity<List<Product>> getProducts() {
         List<Product> products = this.productService.getProducts();
         return !products.isEmpty() ? ResponseEntity.ok(products) : ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Listar produtos por código do usuário")
     @GetMapping("/user/{userCode}")
     public ResponseEntity<List<Product>> getProductsByUserCode(@PathVariable String userCode) {
         List<Product> products = productService.getProductsByUserCode(userCode);
@@ -57,6 +60,7 @@ public class ProductController {
                 : ResponseEntity.ok(products);
     }
 
+    @Operation(summary = "Atualizar produto com nova imagem")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Product> update(
             @PathVariable Long id,
@@ -74,6 +78,7 @@ public class ProductController {
         }
     }
 
+    @Operation(summary = "Deletar produto por ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         try {
