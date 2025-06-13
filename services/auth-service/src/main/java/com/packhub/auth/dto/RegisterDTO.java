@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterDTO {
-    private int userCode;
+    private Integer userCode;
     private String password;
 }
 

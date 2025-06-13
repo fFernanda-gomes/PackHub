@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class AuthDTO {
 
-    private int userCode;
+    private Integer userCode;
     private String password;
     private Long id;
     private String token;
