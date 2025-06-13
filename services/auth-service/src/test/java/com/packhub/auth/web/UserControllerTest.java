@@ -42,4 +42,31 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.userCode").value(123));
     }
+
+    @Test
+    @DisplayName("Deve retornar 404 se usuário não for encontrado")
+    void shouldReturn404WhenUserNotFound() throws Exception {
+        Mockito.when(userService.getUserById(99L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/99"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve deletar usuário com sucesso")
+    void shouldDeleteUserSuccessfully() throws Exception {
+        mockMvc.perform(shouldDeleteUserSuccessfully("/users/1");)
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        Mockito.verify(userService).deleteUser(1L);
+    }
+
+    @Test
+    @DisplayName("Deve deletar usuário com sucesso")
+    void shouldDeleteUserSuccessfully() throws Exception {
+        mockMvc.perform(shouldDeleteUserSuccessfully("/users/1");)
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        Mockito.verify(userService).deleteUser(1L);
+    }
 }

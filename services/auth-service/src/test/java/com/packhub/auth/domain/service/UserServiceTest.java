@@ -35,6 +35,18 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    @Test
+    @DisplayName("Deve buscar usuário por ID")
+    void shouldFindUserById() {
+        User user = User.builder().id(1L).userCode(123).password("senha").build();
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        Optional<User> result = userService.getUserById(1L);
+
+        AssertionErrors.assertTrue(result.isPresent());
+        AssertionErrors.assertEquals(123, result.get().getUserCode());
+    }
+
 
     @Test
     @DisplayName("Deve deletar usuário com sucesso")
