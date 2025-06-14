@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDr
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,6 +43,43 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
+
+    @Test
+    @DisplayName("Deve retornar todos os usuários")
+    void shouldReturnAllUsers() {
+        List<User> users = List.of(
+                User.builder().id(1L).userCode(123).password("senha").build(),
+                User.builder().id(2L).userCode(456).password("senha2").build()
+        );
+
+        when(userRepository.findAll()).thenReturn(users);
+
+        List<User> result = userService.getAllUsers();
+
+        assertEquals(2, result.size());
+        assertEquals(123, result.get(0).getUserCode());
+        assertEquals(456, result.get(1).getUserCode());
+
+        verify(userRepository).findAll();
+    }
+
+
+
+    @Test
+    @DisplayName("Deve atualizar usuário existente")
+    void shouldUpdateExistingUser() {
+        RegisterDTO dto = new RegisterDTO(88888, "novaSenha");
+
+        User existingUser = User.builder().id(1L).userCode(12345).password("antigaSenha").build();
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+
+        User updated = userService.updateUser(1L, dto);
+
+        assertEquals(88888, updated.getUserCode());
+        assertEquals("novaSenha", updated.getPassword());
+    }
 
     @Test
     void shouldRegisterUserSuccessfully() throws Exception {
