@@ -7,30 +7,28 @@ import com.packhub.auth.dto.RegisterDTO;
 import com.packhub.auth.dto.UserDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.MediaType;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -88,18 +86,6 @@ public class UserControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-
-
-    @Test
-    @DisplayName("Deve retornar 404 ao tentar deletar usuário inexistente")
-    void shouldReturn404WhenDeletingNonExistentUser() throws Exception {
-        Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"))
-                .when(userService).deleteUser(1L);
-
-        mockMvc.perform(delete("/users/1"))
-                .andExpect(status().isNotFound());
-    }
-
     @Test
     @DisplayName("Deve registrar usuário com sucesso")
     void shouldRegisterUser() throws Exception {
@@ -137,7 +123,7 @@ public class UserControllerTest {
 
         Mockito.when(userService.getUserById(1L)).thenReturn(Optional.of(user));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/1"))
+        mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.userCode").value(123));
@@ -148,27 +134,16 @@ public class UserControllerTest {
     void shouldReturn404WhenUserNotFound() throws Exception {
         Mockito.when(userService.getUserById(99L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/99"))
+        mockMvc.perform(get("/users/99"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Deve deletar usuário com sucesso")
     void shouldDeleteUserSuccessfully() throws Exception {
-        mockMvc.perform(shouldDeleteUserSuccessfully("/users/1");)
+        mockMvc.perform(delete("/users/1"))
                 .andExpect(status().isNoContent());
 
         Mockito.verify(userService).deleteUser(1L);
     }
-
-    @Test
-    @DisplayName("Deve deletar usuário com sucesso")
-    void shouldDeleteUserSuccessfully() throws Exception {
-        mockMvc.perform(shouldDeleteUserSuccessfully("/users/1");)
-                .andExpect(status().isNoContent());
-
-        Mockito.verify(userService).deleteUser(1L);
-    }
-
-
 }
