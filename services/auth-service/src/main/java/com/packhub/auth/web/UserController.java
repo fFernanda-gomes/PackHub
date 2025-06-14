@@ -51,6 +51,11 @@ public class UserController {
         return ResponseEntity.ok(userService.auth(dto));
     }
 
+    @Operation(summary = "Listar todos os usuários")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso"),
+            @ApiResponse(responseCode = "204", description = "Nenhum usuário encontrado")
+    })
     @GetMapping
     public ResponseEntity<List<User>> getProducts() {
         List<User> products = this.userService.getAllUsers();
@@ -71,16 +76,22 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Atualizar um usuário pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
             @PathVariable Long id,
-            @RequestBody RegisterDTO dto) {
+            @Valid @RequestBody RegisterDTO dto) {
+
         User updated = userService.updateUser(id, dto);
         return ResponseEntity.ok(new UserDTO(updated.getId(), updated.getUserCode()));
     }
 
     @Operation(summary = "Deletar usuário")
-    @Operation(summary = "Deletar usuário por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
