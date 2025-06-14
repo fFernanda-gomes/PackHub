@@ -42,9 +42,6 @@ public class UserService {
 
         userRepository.save(user);
 
-
-        log.info("Saving user: {}", user.getUserCode());
-
         return new UserDTO(user.getId(), user.getUserCode());
     }
 
