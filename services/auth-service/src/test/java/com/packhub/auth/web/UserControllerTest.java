@@ -19,10 +19,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,6 +39,66 @@ public class UserControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    @DisplayName("Deve retornar lista de usuários")
+    void shouldReturnListOfUsers() throws Exception {
+        List<User> users = List.of(
+                User.builder().id(1L).userCode(123).password("senha").build(),
+                User.builder().id(2L).userCode(456).password("senha2").build()
+        );
+
+        Mockito.when(userService.getAllUsers()).thenReturn(users);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].userCode").value(123))
+                .andExpect(jsonPath("$[1].userCode").value(456));
+    }
+
+    @Test
+    @DisplayName("Deve atualizar usuário com sucesso")
+    void shouldUpdateUserSuccessfully() throws Exception {
+        RegisterDTO input = new RegisterDTO(12345, "novaSenha");
+        User updatedUser = User.builder().id(1L).userCode(12345).password("novaSenha").build();
+
+        Mockito.when(userService.updateUser(eq(1L), any(RegisterDTO.class)))
+                .thenReturn(updatedUser);
+
+        mockMvc.perform(put("/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.userCode").value(12345));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 404 ao tentar atualizar usuário inexistente")
+    void shouldReturn404WhenUpdatingNonExistentUser() throws Exception {
+        RegisterDTO input = new RegisterDTO(99999, "senha");
+
+        Mockito.when(userService.updateUser(eq(1L), any(RegisterDTO.class)))
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        mockMvc.perform(put("/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isNotFound());
+    }
+
+
+
+    @Test
+    @DisplayName("Deve retornar 404 ao tentar deletar usuário inexistente")
+    void shouldReturn404WhenDeletingNonExistentUser() throws Exception {
+        Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"))
+                .when(userService).deleteUser(1L);
+
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isNotFound());
+    }
 
     @Test
     @DisplayName("Deve registrar usuário com sucesso")
