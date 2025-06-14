@@ -87,12 +87,11 @@ public class UserController {
             @Parameter(description = "ID do usuário", example = "1")
             @PathVariable Long id,
             @Valid @RequestBody RegisterDTO dto) {
-    ) {
+
         User updated = userService.updateUser(id, dto);
         return ResponseEntity.ok(new UserDTO(updated.getId(), updated.getUserCode()));
     }
 
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
     @Operation(summary = "Deletar usuário por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
