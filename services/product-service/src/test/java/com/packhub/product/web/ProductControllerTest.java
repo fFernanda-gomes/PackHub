@@ -42,6 +42,33 @@ public class ProductControllerTest {
 
 
     @Test
+    @DisplayName("Deve retornar 200 com lista de produtos")
+    void shouldReturnProducts() throws Exception {
+        Product product = Product.builder()
+                .id(1L)
+                .name("Produto 1")
+                .price(99.9)
+                .imageUrl("http://image.com/img.jpg")
+                .userCode("123")
+                .build();
+
+        when(productService.getProducts()).thenReturn(List.of(product));
+
+        mockMvc.perform(get("/products"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 204 quando não houver produtos")
+    void shouldReturnNoContentWhenEmpty() throws Exception {
+        when(productService.getProducts()).thenReturn(List.of());
+
+        mockMvc.perform(get("/products"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
     @DisplayName("Deve criar produto com sucesso")
     void shouldCreateProductSuccessfully() throws Exception {
         String jsonData = """
