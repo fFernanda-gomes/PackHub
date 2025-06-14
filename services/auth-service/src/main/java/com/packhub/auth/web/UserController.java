@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 
+import java.util.List;
+
 @Tag(name = "Usuários", description = "Endpoints de autenticação e gestão de usuários")
 @CrossOrigin(origins = "*")
 @RestController
@@ -49,6 +51,17 @@ public class UserController {
         return ResponseEntity.ok(userService.auth(dto));
     }
 
+    @Operation(summary = "Listar todos os usuários")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso"),
+            @ApiResponse(responseCode = "204", description = "Nenhum usuário encontrado")
+    })
+    @GetMapping
+    public ResponseEntity<List<User>> getProducts() {
+        List<User> products = this.userService.getAllUsers();
+        return !products.isEmpty() ? ResponseEntity.ok(products) : ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "Buscar usuário por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
@@ -61,6 +74,23 @@ public class UserController {
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Atualizar um usuário pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(
+            @Parameter(description = "ID do usuário", example = "1")
+            @PathVariable Long id,
+
+            @Valid @RequestBody RegisterDTO dto
+    ) {
+        User updated = userService.updateUser(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @Operation(summary = "Deletar usuário por ID")

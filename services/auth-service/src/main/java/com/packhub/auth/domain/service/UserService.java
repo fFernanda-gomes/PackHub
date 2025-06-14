@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -61,9 +62,22 @@ public class UserService {
                 .token(token)
                 .build();
     }
+    public List<User> getAllUsers() {
+        return this.userRepository.findAll();
+    }
 
     public Optional<User> getUserById(Long id) {
         return this.userRepository.findById(id);
+    }
+
+    public User updateUser(Long id, RegisterDTO user) {
+        User UserExist = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        if (user.getUserCode() != null) UserExist.setUserCode(user.getUserCode());
+        if (user.getPassword() != null) UserExist.setPassword(user.getPassword());
+
+        return userRepository.save(UserExist);
     }
 
     public void deleteUser(Long id) {

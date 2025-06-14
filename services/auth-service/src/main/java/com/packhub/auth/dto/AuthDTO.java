@@ -13,12 +13,11 @@ public class AuthDTO {
 
     @Schema(description = "Código do usuário", example = "1111")
     @NotBlank(message = "userCode é obrigatório")
-    private int userCode;
+    private Integer userCode;
 
     @Schema(description = "Senha do usuário", example = "senha123")
     @NotBlank(message = "password é obrigatória")
     private String password;
-
     private Long id;
     private String token;
 }
