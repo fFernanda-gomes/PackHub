@@ -2,6 +2,7 @@ package com.packhub.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @NoArgsConstructor
@@ -12,7 +13,7 @@ import lombok.*;
 public class AuthDTO {
 
     @Schema(description = "Código do usuário", example = "1111")
-    @NotBlank(message = "userCode é obrigatório")
+    @NotNull(message = "userCode é obrigatório")
     private Integer userCode;
 
     @Schema(description = "Senha do usuário", example = "senha123")
