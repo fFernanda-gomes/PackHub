@@ -107,6 +107,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>5.11.0</version>
@@ -123,12 +129,6 @@
 			<artifactId>junit-jupiter</artifactId>
 			<version>5.10.2</version>
 			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.3.0</version>
 		</dependency>
 	</dependencies>
 
@@ -179,6 +179,7 @@
 								<exclude>com/packhub/auth/config/**</exclude>
 								<exclude>**/AuthApplication.class</exclude>
 								<exclude>**/EnvLoader.class</exclude>
+								<exclude>**/AuthServiceApplication.class</exclude>
 							</excludes>
 						</configuration>
 					</execution>
