@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-public class service {
+public class ProductServiceTest {
     @InjectMocks
     private ProductService productService;
 
@@ -37,6 +37,17 @@ public class service {
 
     @Mock
     private AuthenticatedUserProvider authenticatedUserProvider;
+
+
+    @Test
+    void shouldReturnAllProducts() {
+        List<Product> mockList = List.of(new Product(), new Product());
+        when(repository.findAll()).thenReturn(mockList);
+
+        List<Product> result = productService.getProducts();
+
+        assertEquals(2, result.size());
+    }
 
     @Test
     void shouldCreateProductSuccessfully() {
