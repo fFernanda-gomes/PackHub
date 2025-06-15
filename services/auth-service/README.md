@@ -12,38 +12,11 @@ src/main/java/com.packhub.auth/
 ├── config/          → Configurações de segurança, JWT, etc.
 ├── domain/
 │   ├── entities/    → Entidades JPA como User
-│   ├── exception/   → Classes de erro customizadas
-│   ├── listeners/   → Listeners de eventos (como @EntityListeners)
 │   ├── repositories/→ Interfaces JPA
 │   └── service/     → Lógica de negócio
 ├── dto/             → Objetos de requisição e resposta
 └── web/             → Controllers REST
 ```
-
----
-
-## ⚙️ Tecnologias
-
-- Java 17
-- Spring Boot 3.5
-- Spring Security
-- JWT
-- JPA / Hibernate
-- PostgreSQL (produção)
-- H2 Database (testes)
-- Maven
-
----
-
-## 🚀 Como rodar este serviço isoladamente
-
-```bash
-# Rodar localmente com Maven
-./mvnw spring-boot:run
-```
-
-A aplicação irá iniciar em:  
-➡️ http://localhost:8080
 
 ---
 
@@ -64,6 +37,38 @@ A aplicação irá iniciar em:
 
 A autenticação é baseada em **JWT (JSON Web Token)**.  
 O token é retornado após o login e deve ser enviado no cabeçalho `Authorization` para acessar endpoints protegidos.
+
+---
+
+## ⚙️ Tecnologias
+
+- Java 17
+- Spring Boot 3.5
+- Spring Security
+- JWT
+- JPA / Hibernate
+- PostgreSQL
+- Maven
+
+---
+
+## ✅ Testes
+
+- Escritos com **JUnit 5** e **Mockito**
+- Mock de dependências como repositórios
+- Cobertura de testes com **JaCoCo** > 90%
+
+---
+
+## 🚀 Como rodar este serviço isoladamente
+
+```bash
+# Rodar localmente com Maven
+./mvnw spring-boot:run
+```
+
+A aplicação irá iniciar em:  
+➡️ http://localhost:8080
 
 ---
 
