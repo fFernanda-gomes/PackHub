@@ -3,6 +3,7 @@ package com.packhub.auth.domain.service;
 import com.packhub.auth.config.JwtConfig;
 import com.packhub.auth.domain.entities.User;
 import com.packhub.auth.domain.repositories.UserRepository;
+import com.packhub.auth.dto.AuthDTO;
 import com.packhub.auth.dto.RegisterDTO;
 import com.packhub.auth.dto.UserDTO;
 import org.junit.jupiter.api.DisplayName;
@@ -142,4 +143,61 @@ public class UserServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         assertEquals("Usuário não encontrado", exception.getReason());
     }
+
+    @Test
+    @DisplayName("Deve autenticar usuário com sucesso")
+    void shouldAuthenticateSuccessfully() {
+        User user = User.builder().id(1L).userCode(12345).password("encoded").build();
+        AuthDTO authDTO = AuthDTO.builder()
+                .userCode(12345)
+                .password("senha")
+                .build();
+        when(userRepository.findByUserCode(12345)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("senha", "encoded")).thenReturn(true);
+        when(jwtConfig.generateToken("12345")).thenReturn("token123");
+
+        AuthDTO result = userService.auth(authDTO);
+
+        assertEquals("token123", result.getToken());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção se usuário não for encontrado")
+    void shouldThrowWhenUserNotFound() {
+        AuthDTO authDTO = AuthDTO.builder()
+                .userCode(99999)
+                .password("senhaErrada")
+                .build();
+
+        when(userRepository.findByUserCode(99999)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            userService.auth(authDTO);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        assertEquals("Usuário não encontrado", ex.getReason());
+    }
+
+
+    @Test
+    @DisplayName("Deve lançar exceção se senha estiver incorreta")
+    void shouldThrowWhenPasswordIncorrect() {
+        User user = User.builder().id(1L).userCode(12345).password("encoded").build();
+        AuthDTO authDTO = AuthDTO.builder()
+                .userCode(12345)
+                .password("senhaErrada")
+                .build();
+
+        when(userRepository.findByUserCode(12345)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("senhaErrada", "encoded")).thenReturn(false);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> {
+            userService.auth(authDTO);
+        });
+
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusCode());
+        assertEquals("Credenciais inválidas", ex.getReason());
+    }
+
 }
