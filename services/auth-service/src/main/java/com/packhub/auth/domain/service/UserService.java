@@ -48,10 +48,10 @@ public class UserService {
 
     public AuthDTO auth(AuthDTO authDTO) {
         User user = this.userRepository.findByUserCode(authDTO.getUserCode())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        if (!this.passwordEncoder.matches(authDTO.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Senha inválida");
+        if (!passwordEncoder.matches(authDTO.getPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas");
         }
 
         String token = jwtConfig.generateToken(String.valueOf(user.getUserCode()));
