@@ -1,6 +1,6 @@
 # 🧩 PackHub
 
-*PackHub* é uma API modular com arquitetura de *microsserviços* desenvolvida em *Java + Spring Boot*.  
+**PackHub** é uma API modular com arquitetura de **microsserviços** desenvolvida em **Java + Spring Boot**.  
 O sistema permite que usuários autenticados cadastrem e gerenciem produtos com nome, imagem e preço.  
 É ideal para projetos de marketplace, catálogos ou sistemas administrativos com autenticação e gerenciamento de dados.
 
@@ -19,28 +19,32 @@ packhub/
 ├── infra/                    # Configurações de infraestrutura (DB, Nginx, etc.)
 ├── services/                 # Microserviços independentes
 │   ├── auth-service/         # Serviço de autenticação (login, JWT, etc.)
-│   └── product-service/      # Serviço de gerenciamento de produtos
-├── shared/                   # Bibliotecas e utilitários compartilhados
-├── tests/                    # Testes end-to-end e de integração
-└── scripts/                  # Scripts úteis para o time
+└── └── product-service/      # Serviço de gerenciamento de produtos
 ```
 
 ---
 
-## 🧪 Pré-requisitos
+## 📦 Tecnologias utilizadas
 
-- Java 17+ e Maven 3.8+ (Apenas para desenvolvimento fora do Docker)
-- Docker + Docker Compose
-- IntelliJ IDEA (recomendado)
-- Conta no [Cloudinary](https://cloudinary.com/) com as credenciais de acesso
-  - `CLOUDINARY_CLOUD_NAME`
-  - `CLOUDINARY_API_KEY`
-  - `CLOUDINARY_API_SECRET`  
-    Essas variáveis devem ser configuradas no `.env` localizado em `infra/env/.env`.
+- Java 17
+- Spring Boot 3.5
+- Spring Security + JWT
+- Spring Data JPA
+- PostgreSQL
+- Maven
+- Docker
 
 ---
 
 ## 🚀 Como rodar localmente
+
+### ✅ Pré-requisitos
+
+- Java 17+ e Maven 3.8+ (para rodar fora do Docker)
+- Docker + Docker Compose
+- Conta no [Cloudinary](https://cloudinary.com/)
+
+### 🔧 Configuração
 
 1. Clone o repositório:
 
@@ -49,24 +53,19 @@ git clone https://github.com/fFernanda-gomes/packhub.git
 cd packhub
 ```
 
-2. Crie um arquivo .env baseado no .env.example:
+2. Crie um arquivo `.env`:
 
 ```bash
 cp infra/env/.env-example infra/env/.env
 ```
-> Edite o `.env` com suas configurações personalizadas, se necessário.
-> 
 
-3. Rode os serviços com Docker Compose:
+3. Edite o `.env` com suas credenciais do PostgreSQL, JWT e Cloudinary.
+
+4. Rode com Docker:
 
 ```bash
 docker-compose --env-file infra/env/.env up --build
 ```
-
-4. Acesse os serviços:
-
-- `http://localhost:8080` → `auth-service`
-- `http://localhost:8081` → `product-service`
 
 ---
 
@@ -83,31 +82,44 @@ docker-compose --env-file infra/env/.env up --build
 - Envie a imagem e os dados em `multipart/form-data`:
 
 ```bash
-curl --request POST http://localhost:8081/products   --header "Authorization: Bearer {seu_token}"   --header "Content-Type: multipart/form-data"   --form "image=@/caminho/para/imagem.jpg"   --form 'data={ "name": "Produto X", "price": 99.90 }'
+curl --request POST http://localhost:8081/products \
+  --header "Authorization: Bearer {seu_token}" \
+  --header "Content-Type: multipart/form-data" \
+  --form "image=@/caminho/para/imagem.jpg" \
+  --form 'data={ "name": "Produto X", "price": 99.90 }'
 ```
+
+### ℹ️ Observação
+
+Para ver todos os **endpoints disponíveis** e **exemplos de uso detalhados**, consulte os READMEs individuais dos serviços:
+
+- 🔐 [`auth-service`](./services/auth-service/README.md)
+- 📦 [`product-service`](./services/product-service/README.md)
+
 ---
 
-## 📦 Tecnologias utilizadas
+## 🌐 Serviços Disponíveis
 
-- Java 17
-- Spring Boot 3.5
-- Spring Security + JWT
-- Spring Data JPA
-- PostgreSQL (produção)
-- H2 Database (testes)
-- Maven
-- Docker
+| Serviço          | Porta | Função                            |
+|------------------|-------|------------------------------------|
+| `auth-service`   | 8080  | Cadastro, login, JWT              |
+| `product-service`| 8081  | CRUD de produtos com imagens      |
+
+---
+
+## 🔍 Acesse os serviços
+
+- Swagger Auth: http://localhost:8080/swagger-ui.html
+- Swagger Product: http://localhost:8081/swagger-ui.html
 
 ---
 
 ## 👥 Equipe
 
-| Nome     | Função |
-|----------|--------|
-| Pessoa 1 | "" |
-| Pessoa 2 | "" |
-| Pessoa 3 | "" |
-| Pessoa 4 | "" |
-| Pessoa 5 | "" |
-| Pessoa 6 | "" |
-
+| Nome            | Função                                                              | GitHub |
+|-----------------|---------------------------------------------------------------------|--------|
+| Fernanda Gomes  | Infra, configuração, segurança, JWT, testes, produto e documentação | [@fFernanda-gomes](https://github.com/fFernanda-gomes) |
+| Kauã Rodrigues  | Infra, API de produtos/autenticação e testes                        | [@Kaua1805](https://github.com/Kaua1805) |
+| Arthur Felix    | Configuração, API de autenticação e testes                          | [@ArthurFelixMuniz](https://github.com/ArthurFelixMuniz) |
+| Willian Duarte  | Configuração, JWT, API de autenticação e testes                     | [@Willian917](https://github.com/Willian917) |
+| Luiz Henrique   | API de produtos, configuração e testes                              | [@HenriqueSantos39](https://github.com/HenriqueSantos39) |
