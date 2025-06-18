@@ -3,6 +3,7 @@ package com.packhub.auth.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.packhub.auth.domain.entities.User;
 import com.packhub.auth.domain.service.UserService;
+import com.packhub.auth.dto.AuthDTO;
 import com.packhub.auth.dto.RegisterDTO;
 import com.packhub.auth.dto.UserDTO;
 import org.junit.jupiter.api.DisplayName;
@@ -145,5 +146,47 @@ public class UserControllerTest {
                 .andExpect(status().isNoContent());
 
         Mockito.verify(userService).deleteUser(1L);
+    }
+
+    @Test
+    @DisplayName("Deve autenticar usuário com sucesso via controller")
+    void shouldAuthenticateUserSuccessfully() throws Exception {
+        AuthDTO input = AuthDTO.builder()
+                .userCode(12345)
+                .password("senha")
+                .build();
+
+        AuthDTO output = AuthDTO.builder()
+                .id(1L)
+                .userCode(12345)
+                .token("token123")
+                .build();
+
+        Mockito.when(userService.auth(any(AuthDTO.class))).thenReturn(output);
+
+        mockMvc.perform(post("/users/auth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value("token123"))
+                .andExpect(jsonPath("$.userCode").value(12345));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 401 quando credenciais forem inválidas via controller")
+    void shouldReturn401OnInvalidCredentials() throws Exception {
+        AuthDTO input = AuthDTO.builder()
+                .userCode(12345)
+                .password("senhaIncorreta")
+                .build();
+
+        Mockito.when(userService.auth(any(AuthDTO.class)))
+                .thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas"));
+
+        mockMvc.perform(post("/users/auth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Credenciais inválidas"));
     }
 }

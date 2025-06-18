@@ -16,8 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Usuários", description = "Endpoints de autenticação e gestão de usuários")
 @CrossOrigin(origins = "*")
@@ -47,8 +49,15 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
     @PostMapping("/auth")
-    public ResponseEntity<AuthDTO> authenticate(@Valid @RequestBody AuthDTO dto) {
-        return ResponseEntity.ok(userService.auth(dto));
+    public ResponseEntity<?> authenticate(@Valid @RequestBody AuthDTO authDTO) {
+        try {
+            AuthDTO response = userService.auth(authDTO);
+            return ResponseEntity.ok(response);
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity
+                    .status(ex.getStatusCode())
+                    .body(Map.of("message", ex.getReason()));
+        }
     }
 
     @Operation(summary = "Listar todos os usuários")
@@ -57,9 +66,9 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "Nenhum usuário encontrado")
     })
     @GetMapping
-    public ResponseEntity<List<User>> getProducts() {
-        List<User> products = this.userService.getAllUsers();
-        return !products.isEmpty() ? ResponseEntity.ok(products) : ResponseEntity.noContent().build();
+    public ResponseEntity<List<User>> getUsers() {
+        List<User> users = this.userService.getAllUsers();
+        return !users.isEmpty() ? ResponseEntity.ok(users) : ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Buscar usuário por ID")

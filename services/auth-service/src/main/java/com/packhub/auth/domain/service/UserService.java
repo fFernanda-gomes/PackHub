@@ -48,7 +48,7 @@ public class UserService {
 
     public AuthDTO auth(AuthDTO authDTO) {
         User user = this.userRepository.findByUserCode(authDTO.getUserCode())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas"));
 
         if (!passwordEncoder.matches(authDTO.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas");
