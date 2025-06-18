@@ -93,6 +93,7 @@ public class UserController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
+            @Parameter(description = "ID do usuário", example = "1")
             @PathVariable Long id,
             @Valid @RequestBody RegisterDTO dto) {
 
@@ -100,7 +101,8 @@ public class UserController {
         return ResponseEntity.ok(new UserDTO(updated.getId(), updated.getUserCode()));
     }
 
-    @Operation(summary = "Deletar usuário")
+
+    @Operation(summary = "Deletar usuário por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
