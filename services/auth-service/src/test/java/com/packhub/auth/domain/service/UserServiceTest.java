@@ -175,8 +175,8 @@ public class UserServiceTest {
             userService.auth(authDTO);
         });
 
-        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
-        assertEquals("Usuário não encontrado", ex.getReason());
+        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusCode());
+        assertEquals("Credenciais inválidas", ex.getReason());
     }
 
 

@@ -60,6 +60,7 @@ cp infra/env/.env-example infra/env/.env
 ```
 
 3. Edite o `.env` com suas credenciais do PostgreSQL, JWT e Cloudinary.
+> ℹ️ **Importante:** se for rodar com Docker, use os nomes dos serviços (`postgres-auth`, `postgres-product`) como `HOST`, em vez de `localhost`.
 
 4. Rode com Docker:
 
