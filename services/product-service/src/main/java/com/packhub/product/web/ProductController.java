@@ -9,14 +9,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,14 +40,10 @@ public class ProductController {
     public ResponseEntity<Product> create(
             @RequestParam("image") MultipartFile image,
             @RequestParam("data") String jsonData
-    ) {
-        try {
-            CreateProductDTO dto = objectMapper.readValue(jsonData, CreateProductDTO.class);
-            Product product = productService.createProduct(dto, image);
-            return ResponseEntity.status(HttpStatus.CREATED).body(product);
-        } catch (JsonProcessingException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    ) throws JsonProcessingException {
+        CreateProductDTO dto = objectMapper.readValue(jsonData, CreateProductDTO.class);
+        Product product = productService.createProduct(dto, image);
+        return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @Operation(summary = "Listar todos os produtos")
@@ -61,7 +54,9 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<Product>> getProducts() {
         List<Product> products = this.productService.getProducts();
-        return !products.isEmpty() ? ResponseEntity.ok(products) : ResponseEntity.noContent().build();
+        return products.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(products);
     }
 
     @Operation(summary = "Listar produtos por código do usuário")
@@ -90,19 +85,12 @@ public class ProductController {
     public ResponseEntity<Product> update(
             @Parameter(description = "ID do produto", example = "1")
             @PathVariable Long id,
-
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam("data") String jsonData
-    ) {
-        try {
-            CreateProductDTO dto = objectMapper.readValue(jsonData, CreateProductDTO.class);
-            Product updated = productService.updateProduct(id, dto, image);
-            return ResponseEntity.ok(updated);
-        } catch (JsonProcessingException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    ) throws JsonProcessingException {
+        CreateProductDTO dto = objectMapper.readValue(jsonData, CreateProductDTO.class);
+        Product updated = productService.updateProduct(id, dto, image);
+        return ResponseEntity.ok(updated);
     }
 
     @Operation(summary = "Deletar produto por ID")
@@ -116,13 +104,7 @@ public class ProductController {
             @Parameter(description = "ID do produto", example = "1")
             @PathVariable Long id
     ) {
-        try {
-            productService.deleteProduct(id);
-            return ResponseEntity.noContent().build();
-        } catch (AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }
